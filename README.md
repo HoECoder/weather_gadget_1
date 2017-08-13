@@ -10,3 +10,5 @@ It loops once every 15 seconds, showing the current temp, the max and min since 
 It is currently configured to show in Fahrenheit.
 
 It uses 4 of the six potential lines one can use to draw with on the OLED module.
+
+ ![Gadget Breadboard](WG_BB_01.png?raw=true "Weather Gadget")
