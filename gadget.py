@@ -7,13 +7,6 @@ import time
 import network
 import ubinascii
 
-ap_if = network.WLAN(network.AP_IF)
-essid = b"EnvPy-%s" % ubinascii.hexlify(ap_if.config("mac")[-3:])
-ap_if.active(True)
-ap_if.config(essid=essid, authmode=network.AUTH_WPA_WPA2_PSK, password = b"<HAHAHAHAHA>")
-
-ip_address = b"AP: "+ ap_if.ifconfig()[0]
-
 temp_form = 'Temp: {:9.1f}F'
 max_form = 'Max Temp: {:5.1f}F'
 max_place_holder = 'Max Temp:   None'
@@ -22,6 +15,26 @@ min_place_holder = 'Min Temp:   None'
 max_temp = None
 min_temp = None
 humdity_form = 'Humidity: {:5.0f}%'
+
+d1 = Pin(5) # SCL
+d2 = Pin(4) # SDA
+d5 = Pin(14, Pin.IN) # DHT Sense
+i2c = I2C(scl = d1, sda = d2)
+oled = SSD1306_I2C(128, 64, i2c)
+sensor = dht.DHT22(d5)
+
+oled.fill(0)
+oled.text("Loading...", 0, 30)
+oled.show()
+
+ap_if = network.WLAN(network.AP_IF)
+essid = b"EnvPy-%s" % ubinascii.hexlify(ap_if.config("mac")[-3:])
+ap_if.active(True)
+ap_if.config(essid=essid, authmode=network.AUTH_WPA_WPA2_PSK, password = b"<HAHAHAHAHA>")
+
+ip_address = b"AP: "+ ap_if.ifconfig()[0]
+
+print("AP Configured")
 
 def CtoF(c):
     return (1.8 * c) + 32
@@ -53,14 +66,7 @@ def report_temp(display, sense):
     oled.text(ip_address, 0 , 50)
     
     oled.show()
-
-d1 = Pin(5) # SCL
-d2 = Pin(4) # SDA
-d5 = Pin(14, Pin.IN) # DHT Sense
-i2c = I2C(scl = d1, sda = d2)
-oled = SSD1306_I2C(128, 64, i2c)
-sensor = dht.DHT22(d5)
-
+    
 def run():
     while True:
         report_temp(oled, sensor)
