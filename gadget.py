@@ -4,6 +4,16 @@ from ssd1306 import SSD1306_I2C
 import dht
 import time
 
+import network
+import ubinascii
+
+ap_if = network.WLAN(network.AP_IF)
+essid = b"EnvPy-%s" % ubinascii.hexlify(ap_if.config("mac")[-3:])
+ap_if.active(True)
+ap_if.config(essid=essid, authmode=network.AUTH_WPA_WPA2_PSK, password = b"<HAHAHAHAHA>")
+
+ip_address = b"AP: "+ ap_if.ifconfig()[0]
+
 temp_form = 'Temp: {:9.1f}F'
 max_form = 'Max Temp: {:5.1f}F'
 max_place_holder = 'Max Temp:   None'
@@ -17,7 +27,7 @@ def CtoF(c):
     return (1.8 * c) + 32
 
 def report_temp(display, sense):
-    global max_temp, min_temp
+    global max_temp, min_temp, ip_address
     sense.measure()
     c = sense.temperature()
     hum = sense.humidity()
@@ -39,6 +49,8 @@ def report_temp(display, sense):
         min_temp = min(f, min_temp)
         
     oled.text(humdity_form.format(hum), 0, 30)
+    
+    oled.text(ip_address, 0 , 50)
     
     oled.show()
 
