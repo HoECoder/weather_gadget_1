@@ -3,6 +3,7 @@ from machine import Pin, I2C
 from ssd1306 import SSD1306_I2C
 import dht
 import time
+from micropython import const
 
 
 
@@ -14,6 +15,7 @@ min_place_holder='Min Temp:   None'
 max_temp=None
 min_temp=None
 humdity_form='Humidity: {:5.0f}%'
+p=None
 
 d1=None
 d2=None
@@ -23,9 +25,13 @@ oled=None
 sensor=None
 ip_address=None
 run_ap=False
+smooth_factor=const(4)
 
 def CtoF(c):
     return (1.8 * c) + 32
+    
+def smoothing_func(previous,current):
+    return (current+smooth_factor*previous)/(smooth_factor+1)
 
 def init(do_ap=False):
     global d1,d2,d5,i2c,oled,sensor,ip_address,run_ap
@@ -54,9 +60,13 @@ def init(do_ap=False):
         print("AP Configured")
 
 def report_temp(display, sense):
-    global max_temp, min_temp, ip_address,run_ap
+    global max_temp, min_temp, ip_address,run_ap,p
     sense.measure()
     c=sense.temperature()
+    if p is None:
+        p=c
+    c=smoothing_func(p,c)
+    p=c
     hum=sense.humidity()
     f=CtoF(c)
     display.fill(0)
