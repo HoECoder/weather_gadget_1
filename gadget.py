@@ -23,7 +23,7 @@ d5=None
 i2c=None
 oled=None
 sensor=None
-ip_address=None
+ip_address=Noneeeee
 run_ap=False
 smooth_factor=const(4)
 
@@ -32,6 +32,30 @@ def CtoF(c):
     
 def smoothing_func(previous,current):
     return (current+smooth_factor*previous)/(smooth_factor+1)
+
+class Gadget:
+    def __init__(self,i2c, sensor, width = 128, height = 64):
+        self.previous_c = None
+        self.current_c = None
+        self.current_f = None
+        self.width = width
+        self.height = height
+        self.i2c = i2c
+        self.sensor = sensor
+        self.oled = None
+        self.max_temp = None
+        self.min_temp = None
+        
+    def init(self):
+        self.oled = oled=SSD1306_I2C(self.width, self.height, self.i2c)
+        self.oled.fill(0)
+        self.oled.text("Loading...", 0, 30)
+        self.oled.show()
+        
+    def measure(self):
+        self.sensor.measure()
+    
+
 
 def init(do_ap=False):
     global d1,d2,d5,i2c,oled,sensor,ip_address,run_ap
