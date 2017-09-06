@@ -40,7 +40,7 @@ class Gadget:
         self.sensor.measure()
         
     def report(self):
-        c=sense.temperature()
+        c=self.sensor.temperature()
         p = self.previous_c
         if p is None:
             p=c
@@ -48,7 +48,7 @@ class Gadget:
         p=c
         self.current_c=c
         self.previous_c=p
-        hum=sense.humidity()
+        hum=self.sensor.humidity()
         f=CtoF(c)
         self.oled.fill(0)
         self.oled.text(temp_form.format(f), 0, 0)
