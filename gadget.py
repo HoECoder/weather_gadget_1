@@ -59,7 +59,7 @@ class Gadget:
             self.oled.text(max_form.format(self.max_temp), 0, 10)
             self.max_temp=max(f, self.max_temp)
             
-        if min_temp is None:
+        if self.min_temp is None:
             self.oled.text(min_form.format(f), 0, 20)
             self.min_temp=f
         else:
